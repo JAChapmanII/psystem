@@ -194,7 +194,6 @@ int main(int argc, char **argv) {
 	psystem.push(Particle(-7, -13, 0.9));
 
 	bool done = false, mode = true;
-	ldouble xo = 0, yo = 0;
 	while(!done && window.IsOpened()) {
 		Event event;
 		while(window.PollEvent(event)) {
@@ -208,7 +207,7 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		for(unsigned i = 0; i < steps; ++i)
+		for(unsigned i = 0; i < steps/2; ++i)
 			psystem.update();
 
 		window.Clear(Color::White);
