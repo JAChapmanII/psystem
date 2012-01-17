@@ -33,8 +33,9 @@ using sf::Shape;
 void outputHelp(ostream &out);
 template<typename T> bool inVector(vector<T> vec, T val);
 
+typedef long double ldouble;
+
 struct Particle {
-	typedef long double ldouble;
 	ldouble px, py;
 	ldouble vx, vy;
 	ldouble radius;
@@ -52,7 +53,7 @@ struct Particle {
 
 class ParticleSystem {
 	public:
-		ParticleSystem() : m_particles(), m_step(0) {
+		ParticleSystem(ldouble idt) : m_particles(), m_step(0), m_deltaTime(idt) {
 		}
 
 		void push(Particle nparticle) {
@@ -80,11 +81,11 @@ class ParticleSystem {
 					++i) {
 				Particle current = *i;
 				if(this->m_step % 2) {
-						// v_{n+1} = v_n + g(t_n, x_n    ) Δt
-						// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
+					// v_{n+1} = v_n + g(t_n, x_n    ) Δt
+					// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
 				} else {
-						// x_{n+1} = x_n + f(t_n, v_n    ) Δt
-						// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
+					// x_{n+1} = x_n + f(t_n, v_n    ) Δt
+					// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
 				}
 				new_system.push_back(current);
 			}
@@ -95,6 +96,7 @@ class ParticleSystem {
 	protected:
 		vector<Particle> m_particles;
 		unsigned long m_step;
+		ldouble m_deltaTime;
 };
 
 int main(int argc, char **argv) {
@@ -121,7 +123,7 @@ int main(int argc, char **argv) {
 	View view;
 	view.SetSize(windowWidth, windowHeight);
 
-	ParticleSystem psystem;
+	ParticleSystem psystem(1.0 / 60.0);
 	psystem.push(Particle(0,  0, 0.3));
 	psystem.push(Particle(5,  5, 0.3));
 	psystem.push(Particle(5, -5, 0.3));
