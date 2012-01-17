@@ -55,11 +55,13 @@ struct Particle {
 
 class ParticleSystem {
 	public:
-		ParticleSystem(ldouble idt) : m_particles(), m_step(0), m_deltaTime(idt) {
+		ParticleSystem(ldouble idt) : m_particles(), m_step(0), m_deltaTime(idt),
+				m_isDirty(false), m_cx(0), m_cy(0) {
 		}
 
 		void push(Particle nparticle) {
 			this->m_particles.push_back(nparticle);
+			this->m_isDirty = true;
 		}
 
 		void draw(sf::RenderTarget &target) {
@@ -112,12 +114,42 @@ class ParticleSystem {
 			}
 			this->m_particles = new_system;
 			this->m_step++;
+			this->m_isDirty = true;
+		}
+
+		void computeCenter() {
+			this->m_isDirty = false;
+			ldouble tmass = 0;
+			this->m_cx = this->m_cy = 0;
+			for(auto i = this->m_particles.begin(); i != this->m_particles.end();
+					++i) {
+				tmass += i->mass;
+				this->m_cx += i->px * i->mass;
+				this->m_cy += i->py * i->mass;
+			}
+			this->m_cx /= tmass;
+			this->m_cy /= tmass;
+		}
+
+		ldouble getX() {
+			if(this->m_isDirty)
+				this->computeCenter();
+			return this->m_cx;
+		}
+
+		ldouble getY() {
+			if(this->m_isDirty)
+				this->computeCenter();
+			return this->m_cy;
 		}
 
 	protected:
 		vector<Particle> m_particles;
 		unsigned long m_step;
 		ldouble m_deltaTime;
+
+		bool m_isDirty;
+		ldouble m_cx, m_cy;
 };
 
 int main(int argc, char **argv) {
@@ -163,15 +195,13 @@ int main(int argc, char **argv) {
 			}
 		}
 
-		view.SetCenter(0, 0);
+		for(unsigned i = 0; i < steps; ++i)
+			psystem.update();
+		view.SetCenter(psystem.getX(), psystem.getY());
 
 		window.Clear(Color::White);
 		window.SetView(view);
-
-		for(unsigned i = 0; i < steps; ++i)
-			psystem.update();
 		psystem.draw(window);
-
 		window.Display();
 	}
 
