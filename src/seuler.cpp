@@ -50,6 +50,34 @@ struct Particle {
 	}
 };
 
+class ParticleSystem {
+	public:
+		ParticleSystem() : m_particles() {
+		}
+
+		void push(Particle nparticle) {
+			this->m_particles.push_back(nparticle);
+		}
+
+		void draw(sf::RenderTarget &target) {
+			//CircleShape circle;
+			//circle.SetFillColor(Color::Black);
+			for(auto i = this->m_particles.begin(); i != this->m_particles.end();
+					++i) {
+				Shape circle = Shape::Circle(
+						i->px * 10, i->py * 10, i->radius * 10, Color::Black);
+				/*
+				circle.SetRadius(i->radius);
+				circle.SetPosition(i->px, i->py);
+				*/
+				target.Draw(circle);
+			}
+		}
+
+	protected:
+		vector<Particle> m_particles;
+};
+
 int main(int argc, char **argv) {
 	vector<string> args;
 	for(unsigned i = 1; i < (unsigned)argc; ++i)
@@ -74,10 +102,10 @@ int main(int argc, char **argv) {
 	View view;
 	view.SetSize(windowWidth, windowHeight);
 
-	vector<Particle> pvec;
-	pvec.push_back(Particle(0,  0, 5, 0.3));
-	pvec.push_back(Particle(5,  5, 5, 0.3));
-	pvec.push_back(Particle(5, -5, 5, 0.3));
+	ParticleSystem psystem;
+	psystem.push(Particle(0,  0, 0.3));
+	psystem.push(Particle(5,  5, 0.3));
+	psystem.push(Particle(5, -5, 0.3));
 
 	bool done = false;
 	while(!done && window.IsOpened()) {
@@ -96,17 +124,7 @@ int main(int argc, char **argv) {
 		window.Clear(Color::White);
 		window.SetView(view);
 
-		//CircleShape circle;
-		//circle.SetFillColor(Color::Black);
-		for(auto i = pvec.begin(); i != pvec.end(); ++i) {
-			Shape circle = Shape::Circle(
-					i->px * 10, i->py * 10, i->radius * 10, Color::Black);
-			/*
-			circle.SetRadius(i->radius);
-			circle.SetPosition(i->px, i->py);
-			*/
-			window.Draw(circle);
-		}
+		psystem.draw(window);
 
 		window.Display();
 	}
