@@ -24,16 +24,23 @@ using sf::Event;
 using sf::Keyboard;
 
 using sf::Color;
+using sf::Shape;
+//using sf::CircleShape;
 // }}}
 
 void outputHelp(ostream &out);
 template<typename T> bool inVector(vector<T> vec, T val);
 
 struct Particle {
-	long double px, py;
-	long double vx, vy;
-	long double mass;
-	long double radius;
+	typedef long double ldouble;
+	ldouble px, py;
+	ldouble vx, vy;
+	ldouble mass;
+	ldouble radius;
+	
+	Particle(ldouble ipx, ldouble ipy, ldouble imass, ldouble iradius) :
+		px(ipx), py(ipy), vx(0), vy(0), mass(imass), radius(iradius) {
+	}
 };
 
 int main(int argc, char **argv) {
@@ -57,6 +64,14 @@ int main(int argc, char **argv) {
 			sf::Style::Close);
 	window.SetFramerateLimit(60);
 
+	View view;
+	view.SetSize(windowWidth, windowHeight);
+
+	vector<Particle> pvec;
+	pvec.push_back(Particle(0,  0, 5, 0.3));
+	pvec.push_back(Particle(5,  5, 5, 0.3));
+	pvec.push_back(Particle(5, -5, 5, 0.3));
+
 	bool done = false;
 	while(!done && window.IsOpened()) {
 		Event event;
@@ -69,7 +84,23 @@ int main(int argc, char **argv) {
 			}
 		}
 
+		view.SetCenter(0, 0);
+
 		window.Clear(Color::White);
+		window.SetView(view);
+
+		//CircleShape circle;
+		//circle.SetFillColor(Color::Black);
+		for(auto i = pvec.begin(); i != pvec.end(); ++i) {
+			Shape circle = Shape::Circle(
+					i->px * 10, i->py * 10, i->radius * 10, Color::Black);
+			/*
+			circle.SetRadius(i->radius);
+			circle.SetPosition(i->px, i->py);
+			*/
+			window.Draw(circle);
+		}
+
 		window.Display();
 	}
 
