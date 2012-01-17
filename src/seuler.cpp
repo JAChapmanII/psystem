@@ -52,7 +52,7 @@ struct Particle {
 
 class ParticleSystem {
 	public:
-		ParticleSystem() : m_particles() {
+		ParticleSystem() : m_particles(), m_step(0) {
 		}
 
 		void push(Particle nparticle) {
@@ -74,8 +74,27 @@ class ParticleSystem {
 			}
 		}
 
+		void update() {
+			vector<Particle> new_system;
+			for(auto i = this->m_particles.begin(); i != this->m_particles.end();
+					++i) {
+				Particle current = *i;
+				if(this->m_step % 2) {
+						// v_{n+1} = v_n + g(t_n, x_n    ) Δt
+						// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
+				} else {
+						// x_{n+1} = x_n + f(t_n, v_n    ) Δt
+						// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
+				}
+				new_system.push_back(current);
+			}
+			this->m_particles = new_system;
+			this->m_step++;
+		}
+
 	protected:
 		vector<Particle> m_particles;
+		unsigned long m_step;
 };
 
 int main(int argc, char **argv) {
@@ -124,6 +143,7 @@ int main(int argc, char **argv) {
 		window.Clear(Color::White);
 		window.SetView(view);
 
+		psystem.update();
 		psystem.draw(window);
 
 		window.Display();
