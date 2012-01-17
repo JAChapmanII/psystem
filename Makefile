@@ -6,6 +6,7 @@ OBJS=
 BIN=seuler
 
 CXXFLAGS=-std=c++0x
+LDFLAGS=-lsfml-graphics -lsfml-window
 
 ifndef release
 CXXFLAGS+=-g
