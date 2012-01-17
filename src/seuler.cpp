@@ -32,8 +32,10 @@ using sf::Shape;
 
 void outputHelp(ostream &out);
 template<typename T> bool inVector(vector<T> vec, T val);
+long double signum(long double &x);
 
 typedef long double ldouble;
+const ldouble GRAVITY = 9.8;
 
 struct Particle {
 	ldouble px, py;
@@ -80,12 +82,31 @@ class ParticleSystem {
 			for(auto i = this->m_particles.begin(); i != this->m_particles.end();
 					++i) {
 				Particle current = *i;
-				if(this->m_step % 2) {
-					// v_{n+1} = v_n + g(t_n, x_n    ) Δt
-					// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
-				} else {
-					// x_{n+1} = x_n + f(t_n, v_n    ) Δt
-					// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
+				for(auto j = this->m_particles.begin();
+						j != this->m_particles.end(); ++j) {
+					if(i == j)
+						continue;
+					if(this->m_step % 2) {
+						// v_{n+1} = v_n + g(t_n, x_n    ) Δt
+						ldouble dx = current.px - j->px, dy = current.py - j->py;
+						current.vx += GRAVITY * j->mass /
+							dx*dx * -signum(dx) * this->m_deltaTime;
+						current.vy += GRAVITY * j->mass /
+							dy*dy * -signum(dy) * this->m_deltaTime;
+						// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
+						current.px += current.vx * this->m_deltaTime;
+						current.py += current.vy * this->m_deltaTime;
+					} else {
+						// x_{n+1} = x_n + f(t_n, v_n    ) Δt
+						current.px += current.vx * this->m_deltaTime;
+						current.py += current.vy * this->m_deltaTime;
+						// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
+						ldouble dx = current.px - j->px, dy = current.py - j->py;
+						current.vx += GRAVITY * j->mass /
+							dx*dx * -signum(dx) * this->m_deltaTime;
+						current.vy += GRAVITY * j->mass /
+							dy*dy * -signum(dy) * this->m_deltaTime;
+					}
 				}
 				new_system.push_back(current);
 			}
@@ -123,10 +144,12 @@ int main(int argc, char **argv) {
 	View view;
 	view.SetSize(windowWidth, windowHeight);
 
-	ParticleSystem psystem(1.0 / 60.0);
-	psystem.push(Particle(0,  0, 0.3));
-	psystem.push(Particle(5,  5, 0.3));
-	psystem.push(Particle(5, -5, 0.3));
+	unsigned steps = 100;
+	ParticleSystem psystem(1.0 / 60.0 / steps);
+	psystem.push(Particle(-5,   0, 0.9));
+	psystem.push(Particle(10,   5, 0.9));
+	psystem.push(Particle( 7, - 7, 0.9));
+	psystem.push(Particle(-7, -13, 0.9));
 
 	bool done = false;
 	while(!done && window.IsOpened()) {
@@ -145,7 +168,8 @@ int main(int argc, char **argv) {
 		window.Clear(Color::White);
 		window.SetView(view);
 
-		psystem.update();
+		for(unsigned i = 0; i < steps; ++i)
+			psystem.update();
 		psystem.draw(window);
 
 		window.Display();
@@ -164,5 +188,11 @@ void outputHelp(ostream &out) {
 
 template<typename T> bool inVector(vector<T> vec, T val) {
 	return (find(vec.begin(), vec.end(), val) != vec.end());
+}
+
+long double signum(long double &x) {
+	if(x < 0)
+		return -1;
+	return 1;
 }
 
