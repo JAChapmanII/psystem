@@ -13,6 +13,8 @@ using std::string;
 
 #include <algorithm>
 using std::find;
+
+#include <cmath>
 // }}}
 // SFML includes {{{
 #include <SFML/Graphics.hpp>
@@ -35,11 +37,16 @@ struct Particle {
 	typedef long double ldouble;
 	ldouble px, py;
 	ldouble vx, vy;
-	ldouble mass;
 	ldouble radius;
-	
-	Particle(ldouble ipx, ldouble ipy, ldouble imass, ldouble iradius) :
-		px(ipx), py(ipy), vx(0), vy(0), mass(imass), radius(iradius) {
+	ldouble mass;
+
+	Particle(ldouble ipx, ldouble ipy, ldouble iradius) :
+			px(ipx), py(ipy), vx(0), vy(0), radius(iradius), mass(0) {
+		mass = M_PI * radius * radius;
+	}
+
+	Particle(ldouble ipx, ldouble ipy, ldouble iradius, ldouble imass) :
+			px(ipx), py(ipy), vx(0), vy(0), radius(iradius), mass(imass) {
 	}
 };
 
