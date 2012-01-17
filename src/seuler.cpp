@@ -36,6 +36,7 @@ long double signum(long double &x);
 
 typedef long double ldouble;
 const ldouble GRAVITY = 9.8;
+const ldouble scaleFactor = 10.0;
 
 struct Particle {
 	ldouble px, py;
@@ -70,7 +71,8 @@ class ParticleSystem {
 			for(auto i = this->m_particles.begin(); i != this->m_particles.end();
 					++i) {
 				Shape circle = Shape::Circle(
-						i->px * 10, i->py * 10, i->radius * 10, Color::Black);
+						i->px * scaleFactor, i->py * scaleFactor,
+						i->radius * scaleFactor, Color::Black);
 				/*
 				circle.SetRadius(i->radius);
 				circle.SetPosition(i->px, i->py);
@@ -143,6 +145,14 @@ class ParticleSystem {
 			return this->m_cy;
 		}
 
+		unsigned size() const {
+			return this->m_particles.size();
+		}
+
+		Particle get(unsigned p) const {
+			return this->m_particles[p];
+		}
+
 	protected:
 		vector<Particle> m_particles;
 		unsigned long m_step;
@@ -183,7 +193,8 @@ int main(int argc, char **argv) {
 	psystem.push(Particle( 7, - 7, 0.9));
 	psystem.push(Particle(-7, -13, 0.9));
 
-	bool done = false;
+	bool done = false, mode = true;
+	ldouble xo = 0, yo = 0;
 	while(!done && window.IsOpened()) {
 		Event event;
 		while(window.PollEvent(event)) {
@@ -192,15 +203,24 @@ int main(int argc, char **argv) {
 			if(event.Type == Event::KeyPressed) {
 				if(event.Key.Code == Keyboard::Escape)
 					done = true;
+				if(event.Key.Code == Keyboard::Space)
+					mode = !mode;
 			}
 		}
 
 		for(unsigned i = 0; i < steps; ++i)
 			psystem.update();
-		view.SetCenter(psystem.getX(), psystem.getY());
 
 		window.Clear(Color::White);
+
+		if(mode)
+			view.SetCenter(psystem.getX() * scaleFactor,
+					psystem.getY() * scaleFactor);
+		else
+			view.SetCenter(psystem.get(0).px * scaleFactor,
+					psystem.get(0).py * scaleFactor);
 		window.SetView(view);
+
 		psystem.draw(window);
 		window.Display();
 	}

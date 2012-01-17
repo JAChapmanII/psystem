@@ -25,6 +25,11 @@ ifdef werror
 CXXFLAGS+=-Werror
 endif
 
+ifdef profile
+CXXFLAGS+=-pg
+LDFLAGS+=-pg
+endif
+
 all: $(BDIR)/$(BIN)
 
 $(BDIR)/$(BIN): $(ODIR)/$(BIN).o
