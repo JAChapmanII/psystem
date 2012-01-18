@@ -17,6 +17,28 @@ using sf::Color;
 
 const ldouble GRAVITY = 9.8;
 
+ldouble xAcceleration(Particle p, vector<Particle> particles);
+ldouble yAcceleration(Particle p, vector<Particle> particles);
+
+ldouble xAcceleration(Particle p, vector<Particle> particles) {
+	ldouble acceleration = 0;
+	for(auto i = particles.begin(); i != particles.end(); ++i) {
+		ldouble dx = p.px - i->px;
+		if(fabs(dx) > numeric_limits<ldouble>::epsilon())
+			acceleration += i->mass / dx*dx * -signum(dx);
+	}
+	return acceleration * GRAVITY;
+}
+ldouble yAcceleration(Particle p, vector<Particle> particles) {
+	ldouble acceleration = 0;
+	for(auto i = particles.begin(); i != particles.end(); ++i) {
+		ldouble dy = p.py - i->py;
+		if(fabs(dy) > numeric_limits<ldouble>::epsilon())
+			acceleration += i->mass / dy*dy * -signum(dy);
+	}
+	return acceleration * GRAVITY;
+}
+
 ParticleSystem::ParticleSystem(ldouble idt) : m_particles(), m_step(0),
 	m_deltaTime(idt), m_isDirty(false), m_cx(0), m_cy(0) {
 }
@@ -46,39 +68,32 @@ void ParticleSystem::draw(RenderTarget &target) { // {{{
 
 void ParticleSystem::update() {
 	vector<Particle> new_system;
-	for(auto i = this->m_particles.begin(); i != this->m_particles.end(); ++i) {
-		Particle current = *i;
-		for(auto j = this->m_particles.begin(); j != this->m_particles.end();
-				++j) {
-			if(i == j)
-				continue;
-			if(this->m_step % 2) {
-				// v_{n+1} = v_n + g(t_n, x_n    ) Δt
-				ldouble dx = current.px - j->px, dy = current.py - j->py;
-				if(fabs(dx) > numeric_limits<ldouble>::epsilon())
-					current.vx += GRAVITY * j->mass /
-						dx*dx * -signum(dx) * this->m_deltaTime;
-				if(fabs(dy) > numeric_limits<ldouble>::epsilon())
-					current.vy += GRAVITY * j->mass /
-						dy*dy * -signum(dy) * this->m_deltaTime;
-				// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
-				current.px += current.vx * this->m_deltaTime;
-				current.py += current.vy * this->m_deltaTime;
-			} else {
-				// x_{n+1} = x_n + f(t_n, v_n    ) Δt
-				current.px += current.vx * this->m_deltaTime;
-				current.py += current.vy * this->m_deltaTime;
-				// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
-				ldouble dx = current.px - j->px, dy = current.py - j->py;
-				if(fabs(dx) > numeric_limits<ldouble>::epsilon())
-					current.vx += GRAVITY * j->mass /
-						dx*dx * -signum(dx) * this->m_deltaTime;
-				if(fabs(dy) > numeric_limits<ldouble>::epsilon())
-					current.vy += GRAVITY * j->mass /
-						dy*dy * -signum(dy) * this->m_deltaTime;
-			}
+	if(this->m_step == 0) {
+		for(auto i = this->m_particles.begin(); i != this->m_particles.end();
+				++i) {
+			Particle next = *i;
+			next.ax = xAcceleration(*i, this->m_particles) / 2.0;
+			next.ay = yAcceleration(*i, this->m_particles) / 2.0;
+			new_system.push_back(next);
 		}
-		new_system.push_back(current);
+		this->m_particles = new_system;
+		new_system.clear();
+	}
+	for(auto i = this->m_particles.begin(); i != this->m_particles.end(); ++i) {
+		Particle next = *i;
+
+		next.px += this->m_deltaTime *
+			(i->vx + this->m_deltaTime / 2.0 * i->ax);
+		next.py += this->m_deltaTime *
+			(i->vy + this->m_deltaTime / 2.0 * i->ay);
+
+		next.ax = xAcceleration(*i, this->m_particles);
+		next.ay = yAcceleration(*i, this->m_particles);
+
+		next.vx += this->m_deltaTime / 2.0 * (i->ax + next.ax);
+		next.vy += this->m_deltaTime / 2.0 * (i->ay + next.ay);
+
+		new_system.push_back(next);
 	}
 	this->m_particles = new_system;
 	this->m_step++;
@@ -89,6 +104,8 @@ void ParticleSystem::computeCenter() { // {{{
 	this->m_isDirty = false;
 	ldouble tmass = 0;
 	this->m_cx = this->m_cy = 0;
+	if(this->size() == 0)
+		return;
 	for(auto i = this->m_particles.begin(); i != this->m_particles.end();
 			++i) {
 		tmass += fabs(i->mass);
