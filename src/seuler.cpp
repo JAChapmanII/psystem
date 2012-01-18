@@ -198,18 +198,13 @@ int main(int argc, char **argv) {
 	unsigned steps = 100;
 	ParticleSystem psystem(1.0 / 60.0 / steps);
 
-	ldouble psize = 0.9, psizeDelta = 0.1;
-	psystem.push(Particle(-9, -9, psize));
-	psystem.push(Particle( 9,  9, psize));
-	psystem.push(Particle(-9,  9, psize));
-	psystem.push(Particle( 9, -9, psize));
-
-	/*
-	psystem.push(Particle(-5,   0, 0.9));
-	psystem.push(Particle(10,   5, 0.9));
-	psystem.push(Particle( 7, - 7, 0.9));
-	psystem.push(Particle(-7, -13, 0.9));
-	*/
+	srand(time(NULL));
+	unsigned ipcount = rand() % 5 + 3;
+	ldouble psize = 3.6 / ipcount, psizeDelta = 0.1;
+	for(unsigned i = 0; i < ipcount; ++i) {
+		ldouble radians = (rand() % 360) * M_PI/180.0;
+		psystem.push(Particle(cos(radians)*16.0, sin(radians)*16.0, psize));
+	}
 
 	bool done = false, mode = true, run = true;
 	while(!done && window.IsOpened()) {
