@@ -36,7 +36,6 @@ long double signum(long double &x);
 
 typedef long double ldouble;
 const ldouble GRAVITY = 9.8;
-const ldouble scaleFactor = 10.0;
 
 struct Particle {
 	ldouble px, py;
@@ -70,9 +69,7 @@ class ParticleSystem {
 			//circle.SetFillColor(Color::Black);
 			for(auto i = this->m_particles.begin(); i != this->m_particles.end();
 					++i) {
-				Shape circle = Shape::Circle(
-						i->px * scaleFactor, i->py * scaleFactor,
-						i->radius * scaleFactor, Color::Black);
+				Shape circle = Shape::Circle(i->px, i->py, i->radius, Color::Black);
 				/*
 				circle.SetRadius(i->radius);
 				circle.SetPosition(i->px, i->py);
@@ -183,8 +180,9 @@ int main(int argc, char **argv) {
 			sf::Style::Close);
 	window.SetFramerateLimit(60);
 
+	const ldouble scaleFactor = 10.0;
 	View view;
-	view.SetSize(windowWidth, windowHeight);
+	view.SetSize(windowWidth / scaleFactor, windowHeight / scaleFactor);
 
 	unsigned steps = 100;
 	ParticleSystem psystem(1.0 / 60.0 / steps);
@@ -213,11 +211,9 @@ int main(int argc, char **argv) {
 		window.Clear(Color::White);
 
 		if(mode)
-			view.SetCenter(psystem.getX() * scaleFactor,
-					psystem.getY() * scaleFactor);
+			view.SetCenter(psystem.getX(), psystem.getY());
 		else
-			view.SetCenter(psystem.get(0).px * scaleFactor,
-					psystem.get(0).py * scaleFactor);
+			view.SetCenter(psystem.get(0).px, psystem.get(0).py);
 		window.SetView(view);
 
 		psystem.draw(window);
