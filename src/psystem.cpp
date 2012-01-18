@@ -42,14 +42,14 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 	if(!args.empty()) {
-		cerr << "seuler: invalid argument passed" << endl;
+		cerr << "psystem: invalid argument passed" << endl;
 		outputHelp(cerr);
 		return 1;
 	}
 
 	unsigned windowWidth = 800, windowHeight = 600;
 	const ldouble scaleFactor = 10.0, minPSize = 0.3, maxPSize = 3.6;
-	string windowTitle = "seuler";
+	string windowTitle = "psystem";
 
 	RenderWindow window(VideoMode(windowWidth, windowHeight), windowTitle,
 			sf::Style::Close);

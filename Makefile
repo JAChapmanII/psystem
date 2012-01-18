@@ -3,8 +3,8 @@ BDIR=.
 ODIR=obj
 
 OBJS=$(ODIR)/particle.o $(ODIR)/particlesystem.o $(ODIR)/util.o
-MAIN=seuler
-BIN=seuler
+MAIN=psystem
+BIN=$(MAIN)
 
 CXXFLAGS=-std=c++0x
 LDFLAGS=-lsfml-graphics -lsfml-window
