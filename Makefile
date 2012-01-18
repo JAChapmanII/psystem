@@ -3,6 +3,7 @@ BDIR=.
 ODIR=obj
 
 OBJS=
+MAIN=seuler
 BIN=seuler
 
 CXXFLAGS=-std=c++0x
@@ -32,7 +33,7 @@ endif
 
 all: $(BDIR)/$(BIN)
 
-$(BDIR)/$(BIN): $(ODIR)/$(BIN).o
+$(BDIR)/$(BIN): $(ODIR)/$(MAIN).o
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
