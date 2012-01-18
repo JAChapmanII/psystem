@@ -7,6 +7,7 @@ using std::endl;
 void util::outputHelp(ostream &out) {
 	out << "seuler: An implementation of a simplectic Euler integrator" << endl;
 	out << "\t-h|--help: print this help message and quit" << endl;
+	out << "see the README for more information" << endl;
 }
 
 ldouble util::signum(ldouble &x) {
