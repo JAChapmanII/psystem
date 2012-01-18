@@ -27,6 +27,7 @@ using sf::View;
 
 using sf::Event;
 using sf::Keyboard;
+using sf::Mouse;
 
 using sf::Color;
 using sf::Shape;
@@ -65,6 +66,9 @@ class ParticleSystem {
 		void push(Particle nparticle) {
 			this->m_particles.push_back(nparticle);
 			this->m_isDirty = true;
+		}
+		void erase(unsigned p) {
+			this->m_particles.erase(this->m_particles.begin() + p);
 		}
 
 		void draw(sf::RenderTarget &target) {
@@ -198,7 +202,7 @@ int main(int argc, char **argv) {
 	psystem.push(Particle( 7, - 7, 0.9));
 	psystem.push(Particle(-7, -13, 0.9));
 
-	bool done = false, mode = true;
+	bool done = false, mode = true, run = true;
 	while(!done && window.IsOpened()) {
 		Event event;
 		while(window.PollEvent(event)) {
@@ -209,18 +213,41 @@ int main(int argc, char **argv) {
 					done = true;
 				if(event.Key.Code == Keyboard::Space)
 					mode = !mode;
+				if(event.Key.Code == Keyboard::P)
+					run = !run;
+			}
+			if(event.Type == Event::MouseButtonPressed) {
+				ldouble mx = window.ConvertCoords(
+						event.MouseButton.X, event.MouseButton.Y, view).x,
+					my = window.ConvertCoords(
+						event.MouseButton.X, event.MouseButton.Y, view).y;
+				if(event.MouseButton.Button == Mouse::Left) {
+					psystem.push(Particle(mx, my, 0.9));
+				} else if(event.MouseButton.Button == Mouse::Right) {
+					for(unsigned p = 0; p < psystem.size(); ++p) {
+						Particle cp = psystem.get(p);
+						ldouble dx = mx - cp.px, dy = my - cp.py,
+								distance = sqrt(dx*dx + dy*dy);
+						if(distance < cp.radius) {
+							psystem.erase(p);
+							break;
+						}
+					}
+				}
 			}
 		}
 
-		for(unsigned i = 0; i < steps/2; ++i)
-			psystem.update();
+		if(run)
+			for(unsigned i = 0; i < steps/2; ++i)
+				psystem.update();
 
 		window.Clear(Color::White);
 
-		if(mode)
+		if(mode) {
 			view.SetCenter(psystem.getX(), psystem.getY());
-		else
+		} else if(psystem.size() > 0) {
 			view.SetCenter(psystem.get(0).px, psystem.get(0).py);
+		}
 		window.SetView(view);
 
 		psystem.draw(window);
