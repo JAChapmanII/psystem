@@ -17,3 +17,7 @@ Controls:
 	Note: in the default tracking mode (system center), these operations may
 	make it appear as if the camera jumped, because it does.
 
+	Mouse wheel: alter the size of the to be created particle
+	Note: there is currently no indication of the size it will be, this will be
+	changed to include feedback on this variable.
+

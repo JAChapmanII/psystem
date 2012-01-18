@@ -197,10 +197,19 @@ int main(int argc, char **argv) {
 
 	unsigned steps = 100;
 	ParticleSystem psystem(1.0 / 60.0 / steps);
+
+	ldouble psize = 0.9, psizeDelta = 0.1;
+	psystem.push(Particle(-9, -9, psize));
+	psystem.push(Particle( 9,  9, psize));
+	psystem.push(Particle(-9,  9, psize));
+	psystem.push(Particle( 9, -9, psize));
+
+	/*
 	psystem.push(Particle(-5,   0, 0.9));
 	psystem.push(Particle(10,   5, 0.9));
 	psystem.push(Particle( 7, - 7, 0.9));
 	psystem.push(Particle(-7, -13, 0.9));
+	*/
 
 	bool done = false, mode = true, run = true;
 	while(!done && window.IsOpened()) {
@@ -222,7 +231,7 @@ int main(int argc, char **argv) {
 					my = window.ConvertCoords(
 						event.MouseButton.X, event.MouseButton.Y, view).y;
 				if(event.MouseButton.Button == Mouse::Left) {
-					psystem.push(Particle(mx, my, 0.9));
+					psystem.push(Particle(mx, my, psize));
 				} else if(event.MouseButton.Button == Mouse::Right) {
 					for(unsigned p = 0; p < psystem.size(); ++p) {
 						Particle cp = psystem.get(p);
@@ -234,6 +243,9 @@ int main(int argc, char **argv) {
 						}
 					}
 				}
+			}
+			if(event.Type == Event::MouseWheelMoved) {
+				psize += event.MouseWheel.Delta * psizeDelta;
 			}
 		}
 
