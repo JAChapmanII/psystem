@@ -1,0 +1,19 @@
+seluer is a simple gravity simulation using a simplectic Euler integrator.
+
+Building:
+	make
+
+Running:
+	./seuler
+
+Controls:
+	Space: switchs between:
+		tracking the center of the system and
+		tracking the first particle
+	p: pauses or unpauses the simulation
+
+	 Left mouse button: add a particle at mouse location
+	Right mouse button: remove the particle under the mouse
+	Note: in the default tracking mode (system center), these operations may
+	make it appear as if the camera jumped, because it does.
+
