@@ -14,6 +14,9 @@ using std::string;
 #include <algorithm>
 using std::find;
 
+#include <limits>
+using std::numeric_limits;
+
 #include <cmath>
 // }}}
 // SFML includes {{{
@@ -90,10 +93,12 @@ class ParticleSystem {
 					if(this->m_step % 2) {
 						// v_{n+1} = v_n + g(t_n, x_n    ) Δt
 						ldouble dx = current.px - j->px, dy = current.py - j->py;
-						current.vx += GRAVITY * j->mass /
-							dx*dx * -signum(dx) * this->m_deltaTime;
-						current.vy += GRAVITY * j->mass /
-							dy*dy * -signum(dy) * this->m_deltaTime;
+						if(fabs(dx) > numeric_limits<ldouble>::epsilon())
+							current.vx += GRAVITY * j->mass /
+								dx*dx * -signum(dx) * this->m_deltaTime;
+						if(fabs(dy) > numeric_limits<ldouble>::epsilon())
+							current.vy += GRAVITY * j->mass /
+								dy*dy * -signum(dy) * this->m_deltaTime;
 						// x_{n+1} = x_n + f(t_n, v_{n+1}) Δt
 						current.px += current.vx * this->m_deltaTime;
 						current.py += current.vy * this->m_deltaTime;
@@ -103,10 +108,12 @@ class ParticleSystem {
 						current.py += current.vy * this->m_deltaTime;
 						// v_{n+1} = v_n + g(t_n, x_{n+1}) Δt
 						ldouble dx = current.px - j->px, dy = current.py - j->py;
-						current.vx += GRAVITY * j->mass /
-							dx*dx * -signum(dx) * this->m_deltaTime;
-						current.vy += GRAVITY * j->mass /
-							dy*dy * -signum(dy) * this->m_deltaTime;
+						if(fabs(dx) > numeric_limits<ldouble>::epsilon())
+							current.vx += GRAVITY * j->mass /
+								dx*dx * -signum(dx) * this->m_deltaTime;
+						if(fabs(dy) > numeric_limits<ldouble>::epsilon())
+							current.vy += GRAVITY * j->mass /
+								dy*dy * -signum(dy) * this->m_deltaTime;
 					}
 				}
 				new_system.push_back(current);
