@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 	vector<string> args;
 	for(unsigned i = 1; i < (unsigned)argc; ++i)
 		args.push_back((string)argv[i]);
+	srand(time(NULL));
 
 	if(inVector(args, (string)"--help") || inVector(args, (string)"-h")) {
 		outputHelp(cout);
@@ -47,19 +48,19 @@ int main(int argc, char **argv) {
 	}
 
 	unsigned windowWidth = 800, windowHeight = 600;
+	const ldouble scaleFactor = 10.0, minPSize = 0.3, maxPSize = 3.6;
 	string windowTitle = "seuler";
+
 	RenderWindow window(VideoMode(windowWidth, windowHeight), windowTitle,
 			sf::Style::Close);
 	window.SetFramerateLimit(60);
 
-	const ldouble scaleFactor = 10.0;
 	View view;
 	view.SetSize(windowWidth / scaleFactor, windowHeight / scaleFactor);
 
 	unsigned steps = 100;
 	ParticleSystem psystem(1.0 / 60.0 / steps);
 
-	srand(time(NULL));
 	unsigned ipcount = rand() % 5 + 3;
 	ldouble psize = 3.6 / ipcount, psizeDelta = 0.1;
 	for(unsigned i = 0; i < ipcount; ++i) {
@@ -102,6 +103,10 @@ int main(int argc, char **argv) {
 			}
 			if(event.Type == Event::MouseWheelMoved) {
 				psize += event.MouseWheel.Delta * psizeDelta;
+				if(psize < minPSize)
+					psize = minPSize;
+				if(psize > maxPSize)
+					psize = maxPSize;
 			}
 		}
 
