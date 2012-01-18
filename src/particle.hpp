@@ -6,6 +6,7 @@
 struct Particle {
 	ldouble px, py;
 	ldouble vx, vy;
+	ldouble ax, ay;
 	ldouble radius;
 	ldouble mass;
 
