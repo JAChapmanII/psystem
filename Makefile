@@ -2,7 +2,7 @@ SDIR=src
 BDIR=.
 ODIR=obj
 
-OBJS=
+OBJS=$(ODIR)/particle.o $(ODIR)/particlesystem.o $(ODIR)/util.o
 MAIN=seuler
 BIN=seuler
 
@@ -33,7 +33,7 @@ endif
 
 all: $(BDIR)/$(BIN)
 
-$(BDIR)/$(BIN): $(ODIR)/$(MAIN).o
+$(BDIR)/$(BIN): $(ODIR)/$(MAIN).o $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $^
 
 $(ODIR)/%.o: $(SDIR)/%.cpp
