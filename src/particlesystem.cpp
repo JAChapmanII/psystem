@@ -1,7 +1,16 @@
 #include "particlesystem.hpp"
 using std::vector;
+using std::string;
+using std::getline;
 using sf::RenderTarget;
 using util::signum;
+
+#include <iostream>
+using std::cerr;
+using std::endl;
+
+#include <fstream>
+using std::ifstream;
 
 #include <limits>
 using std::numeric_limits;
@@ -43,6 +52,40 @@ ParticleSystem::ParticleSystem(ldouble idt) : m_particles(), m_step(0),
 	m_deltaTime(idt), m_isDirty(false), m_cx(0), m_cy(0) {
 }
 
+void ParticleSystem::load(string systemName) {
+	ifstream in(systemName);
+	if(!in.good()) {
+		cerr << "ParticleSystem::load: " << systemName <<
+			": does not exist" << endl;
+		return;
+	}
+	while(!in.eof()) {
+		ldouble ix, iy, iradius, imass;
+		in >> ix;
+		if(!in.good()) {
+			if(in.eof())
+				break;
+			cerr << "ParticleSystem::load: error1 reading particle #"
+				<< this->size() + 1 << endl;
+			break;
+		}
+		in >> iy >> iradius >> imass;
+		if(!in.good()) {
+			cerr << "ParticleSystem::load: error2 reading particle #"
+				<< this->size() + 1 << endl;
+			break;
+		}
+		Particle p(ix, iy, iradius, imass);
+		in >> p.vx >> p.vy >> p.ax >> p.ay;
+		if(!in.good()) {
+			cerr << "ParticleSystem::load: error2 reading particle #"
+				<< this->size() + 1 << endl;
+			break;
+		}
+		this->m_particles.push_back(p);
+	}
+	this->m_step++;
+}
 void ParticleSystem::push(Particle nparticle) { // {{{
 	this->m_particles.push_back(nparticle);
 	this->m_isDirty = true;

@@ -2,6 +2,7 @@
 #define PARTICLE_SYSTEM_HPP
 
 #include <vector>
+#include <string>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include "particle.hpp"
 #include "util.hpp"
@@ -10,6 +11,7 @@ class ParticleSystem {
 	public:
 		ParticleSystem(ldouble idt);
 
+		void load(std::string systemName);
 		void push(Particle nparticle);
 		void erase(unsigned p);
 
