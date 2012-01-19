@@ -41,6 +41,24 @@ int main(int argc, char **argv) {
 		outputHelp(cout);
 		return 0;
 	}
+
+	bool loadSystem = false;
+	string systemName = "";
+	for(unsigned i = 0; i < args.size(); ++i) {
+		if(args[i] == (string)"--load") {
+			if(i != args.size() - 1) {
+				loadSystem = true;
+				systemName = args[i + 1];
+				args.erase(args.begin() + i);
+				args.erase(args.begin() + i);
+				i -= 2;
+			} else {
+				cerr << "psystem: --load requires argument" << endl;
+				return 2;
+			}
+		}
+	}
+
 	if(!args.empty()) {
 		cerr << "psystem: invalid argument passed" << endl;
 		outputHelp(cerr);
@@ -61,11 +79,19 @@ int main(int argc, char **argv) {
 	unsigned steps = 100;
 	ParticleSystem psystem(1.0 / 60.0 / steps);
 
-	unsigned ipcount = rand() % 5 + 3;
-	ldouble psize = 3.6 / ipcount, psizeDelta = 0.1;
-	for(unsigned i = 0; i < ipcount; ++i) {
-		ldouble radians = (rand() % 360) * M_PI/180.0;
-		psystem.push(Particle(cos(radians)*16.0, sin(radians)*16.0, psize));
+	ldouble psize = 3.6 / 4, psizeDelta = 0.1;
+	if(loadSystem) {
+		psystem.load(systemName);
+		if(psystem.size() < 1) {
+			return 3;
+		}
+	} else {
+		unsigned ipcount = rand() % 5 + 3;
+		psize = 3.6 / ipcount;
+		for(unsigned i = 0; i < ipcount; ++i) {
+			ldouble radians = (rand() % 360) * M_PI/180.0;
+			psystem.push(Particle(cos(radians)*16.0, sin(radians)*16.0, psize));
+		}
 	}
 
 	bool done = false, mode = true, run = true;
