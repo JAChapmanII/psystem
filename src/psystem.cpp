@@ -71,10 +71,10 @@ int main(int argc, char **argv) {
 
 	RenderWindow window(VideoMode(windowWidth, windowHeight), windowTitle,
 			sf::Style::Close);
-	window.SetFramerateLimit(60);
+	window.setFramerateLimit(60);
 
 	View view;
-	view.SetSize(windowWidth / scaleFactor, windowHeight / scaleFactor);
+	view.setSize(windowWidth / scaleFactor, windowHeight / scaleFactor);
 
 	unsigned steps = 100;
 	ParticleSystem psystem(1.0 / 60.0 / steps);
@@ -95,27 +95,27 @@ int main(int argc, char **argv) {
 	}
 
 	bool done = false, mode = true, run = true;
-	while(!done && window.IsOpened()) {
+	while(!done && window.isOpen()) {
 		Event event;
-		while(window.PollEvent(event)) {
-			if(event.Type == Event::Closed)
-				window.Close();
-			if(event.Type == Event::KeyPressed) {
-				if(event.Key.Code == Keyboard::Escape)
+		while(window.pollEvent(event)) {
+			if(event.type == Event::Closed)
+				window.close();
+			if(event.type == Event::KeyPressed) {
+				if(event.key.code == Keyboard::Escape)
 					done = true;
-				if(event.Key.Code == Keyboard::Space)
+				if(event.key.code == Keyboard::Space)
 					mode = !mode;
-				if(event.Key.Code == Keyboard::P)
+				if(event.key.code == Keyboard::P)
 					run = !run;
 			}
-			if(event.Type == Event::MouseButtonPressed) {
-				ldouble mx = window.ConvertCoords(
-						event.MouseButton.X, event.MouseButton.Y, view).x,
-					my = window.ConvertCoords(
-						event.MouseButton.X, event.MouseButton.Y, view).y;
-				if(event.MouseButton.Button == Mouse::Left) {
+			if(event.type == Event::MouseButtonPressed) {
+				// ConvertCoords -> mapPixelToCoords or mapCoordsToPixel
+				sf::Vector2i mouseButtonLoc(event.mouseButton.x, event.mouseButton.y);
+				ldouble mx = window.mapPixelToCoords(mouseButtonLoc, view).x,
+					my = window.mapPixelToCoords(mouseButtonLoc, view).y;
+				if(event.mouseButton.button == Mouse::Left) {
 					psystem.push(Particle(mx, my, psize));
-				} else if(event.MouseButton.Button == Mouse::Right) {
+				} else if(event.mouseButton.button == Mouse::Right) {
 					for(unsigned p = 0; p < psystem.size(); ++p) {
 						Particle cp = psystem.get(p);
 						ldouble dx = mx - cp.px, dy = my - cp.py,
@@ -127,8 +127,8 @@ int main(int argc, char **argv) {
 					}
 				}
 			}
-			if(event.Type == Event::MouseWheelMoved) {
-				psize += event.MouseWheel.Delta * psizeDelta;
+			if(event.type == Event::MouseWheelMoved) {
+				psize += event.mouseWheel.delta * psizeDelta;
 				if(psize < minPSize)
 					psize = minPSize;
 				if(psize > maxPSize)
@@ -140,21 +140,21 @@ int main(int argc, char **argv) {
 			for(unsigned i = 0; i < steps/2; ++i)
 				psystem.update();
 
-		window.Clear(Color::White);
+		window.clear(Color::White);
 
 		if(mode) {
-			view.SetCenter(psystem.getX(), psystem.getY());
+			view.setCenter(psystem.getX(), psystem.getY());
 		} else if(psystem.size() > 0) {
-			view.SetCenter(psystem.get(0).px, psystem.get(0).py);
+			view.setCenter(psystem.get(0).px, psystem.get(0).py);
 		}
-		window.SetView(view);
+		window.setView(view);
 
 		psystem.draw(window);
-		window.Display();
+		window.display();
 	}
 
-	if(window.IsOpened())
-		window.Close();
+	if(window.isOpen())
+		window.close();
 
 	return 0;
 }

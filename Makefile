@@ -7,7 +7,7 @@ MAIN=psystem
 BIN=$(MAIN)
 
 CXXFLAGS=-std=c++0x
-LDFLAGS=-lsfml-graphics -lsfml-window
+LDFLAGS=-lsfml-graphics -lsfml-window -lsfml-system
 
 ifndef release
 CXXFLAGS+=-g
@@ -31,7 +31,10 @@ CXXFLAGS+=-pg
 LDFLAGS+=-pg
 endif
 
-all: $(BDIR)/$(BIN)
+all: dirs $(BDIR)/$(BIN)
+
+dirs:
+	mkdir -p $(ODIR)
 
 $(BDIR)/$(BIN): $(ODIR)/$(MAIN).o $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $^

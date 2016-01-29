@@ -17,9 +17,11 @@ using std::numeric_limits;
 
 #include <cmath>
 
-//using sf::CircleShape;
 #include <SFML/Graphics/Shape.hpp>
 using sf::Shape;
+
+#include <SFML/Graphics/CircleShape.hpp>
+using sf::CircleShape;
 
 #include <SFML/Graphics/Color.hpp>
 using sf::Color;
@@ -100,12 +102,14 @@ void ParticleSystem::draw(RenderTarget &target) { // {{{
 	//circle.SetFillColor(Color::Black);
 	for(auto i = this->m_particles.begin(); i != this->m_particles.end();
 			++i) {
-		Shape circle = Shape::Circle(i->px, i->py, i->radius, Color::Black);
+		CircleShape circle(i->radius);
+		circle.setPosition(i->px, i->py);
+		circle.setFillColor(Color::Black);
 		/*
 		circle.SetRadius(i->radius);
 		circle.SetPosition(i->px, i->py);
 		*/
-		target.Draw(circle);
+		target.draw(circle);
 	}
 } // }}}
 
