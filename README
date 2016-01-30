@@ -1,5 +1,11 @@
 seluer is a simple gravity simulation using a simplectic Euler integrator.
 
+(seluer? Did I rename this and forget...) Obligatory gifs:
+	https://jac2.net/img/psystem_001.gif
+	https://jac2.net/img/psystem_002.gif
+	https://jac2.net/img/psystem_square.gif
+	https://jac2.net/img/psystem_triangle.gif
+
 Building:
 	make
 
