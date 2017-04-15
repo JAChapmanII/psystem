@@ -9,6 +9,8 @@ using std::vector;
 
 #include <string>
 using std::string;
+
+#include <cmath>
 // }}}
 // SFML includes {{{
 #include <SFML/Graphics.hpp>

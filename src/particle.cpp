@@ -1,4 +1,5 @@
 #include "particle.hpp"
+#include <cmath>
 
 Particle::Particle(ldouble ipx, ldouble ipy, ldouble iradius) :
 		px(ipx), py(ipy), vx(0), vy(0), ax(0), ay(0), radius(iradius), mass(0) {
