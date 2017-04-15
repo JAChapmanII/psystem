@@ -1,6 +1,6 @@
-seluer is a simple gravity simulation using a simplectic Euler integrator.
+psystem is a simple gravity simulation using a simplectic Euler integrator.
 
-(seluer? Did I rename this and forget...) Obligatory gifs:
+Obligatory gifs:
 	https://jac2.net/img/psystem_001.gif
 	https://jac2.net/img/psystem_002.gif
 	https://jac2.net/img/psystem_square.gif
@@ -10,7 +10,8 @@ Building:
 	make
 
 Running:
-	./seuler
+	./psystem # generate and play a random particle system
+	./psystem --load ./systems/solar # load and play the "solar" particle system
 
 Controls:
 	Space: switchs between:
